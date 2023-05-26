@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const CalculadoraPropinasApp());
@@ -90,7 +91,7 @@ class CalculatorPage extends StatelessWidget {
                   semanticLabel: 'Money Icon for decorative objectives',
                 ),
                 SizedBox(height: 50,),
-                Text('Estamos en la pagina de Calculator'),
+                BriveForm(),
                 ElevatedButton(
                     onPressed: (){
                   Navigator.pop(context);
@@ -102,4 +103,96 @@ class CalculatorPage extends StatelessWidget {
     );
   }
 }
+
+class BriveForm extends StatefulWidget {
+  const BriveForm({Key? key}) : super(key: key);
+
+  @override
+  State<BriveForm> createState() => _BriveFormState();
+}
+
+class _BriveFormState extends State<BriveForm> {
+
+  final _formKey=GlobalKey<FormState>();
+  late String brive;
+  late String porcentaje;
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        children: <Widget>[
+          Container(
+            width: 330,
+            child: Column(
+              children: [
+                TextFormField(
+                  onSaved: (value){
+                    brive=value.toString();
+                    },
+                  onChanged:(text){
+                    print(text.runtimeType);
+                    },
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Ingresa la propina'
+                    ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                  validator: (value){
+                    if(value==null || value.isEmpty){
+                      return 'Por favor ingresar valor';
+                    }
+                    return null;
+                  }
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  onChanged:(text){print(text);},
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Ingresa el % que deseas dejar'
+                  ),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                  validator: (value){
+
+                    if(value==null || value.isEmpty){
+                      return 'Por favor ingresar valor';
+                    }
+                    int parsedValue=int.parse(value);
+                    if(parsedValue<0 || parsedValue>100) {
+                      return 'Porcentaje fuera del rango (0%-100%)';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                ElevatedButton(
+                    onPressed: (){
+                      if(_formKey.currentState!.validate()){
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Datos correctos!'))
+                        );
+                      }
+                    },
+                    child: Text("Submit!")),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 
